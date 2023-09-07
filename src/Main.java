@@ -1,22 +1,20 @@
 import il.ac.shenkar.model.*;
 
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
 
-        DBConnection db = DBConnection.getInstance();
-        db.addCategory(new Category("test1"));
-        db.addCategory(new Category("test2"));
-        db.addCategory(new Category("test3"));
-        db.getAllCategories();
-        db.deleteCategory(new Category("test1"));
-        db.getAllCategories();
-        db.deleteCategory(new Category("test2"));
-        db.getAllCategories();
-        db.deleteCategory(new Category("test3"));
+        CategoryDAO cat = new CategoryDAO();
+        cat.save(new Category(-1, "test1"));
+        cat.save(new Category(-1, "test2"));
+        cat.save(new Category(-1, "test3"));
 
-        db.getAllCategories();
+        List<Category> lcat = cat.getAll();
 
-        db.DBCloseConnection();
+        System.out.println(cat.get(lcat.get(1).getId()).getName());
+
+
     }
 
 }
