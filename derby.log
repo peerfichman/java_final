@@ -1,12 +1,12 @@
 ----------------------------------------------------------------
-Thu Sep 07 10:26:48 IDT 2023:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.16.1.1 - (1901046): instance a816c00e-018a-6e89-5496-00000f2a9368 
-on database directory C:\Users\peerf\OneDrive - Shenkar College\Desktop\Java\Final\accountingDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@4d7e1886 
-Loaded from file:/C:/Users/peerf/OneDrive%20-%20Shenkar%20College/Desktop/Java/Final/db-derby-10.16.1.1-bin/lib/derby.jar
-java.vendor=Oracle Corporation
-java.runtime.version=19.0.1+10-21
-user.dir=C:\Users\peerf\OneDrive - Shenkar College\Desktop\Java\Final
-os.name=Windows 11
+Thu Sep 07 11:01:16 IDT 2023:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.16.1.1 - (1901046): instance a816c00e-018a-6ea8-df55-00000f18e2c8 
+on database directory C:\Users\MY PC\IdeaProjects\java_final\accountingDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@7b3300e5 
+Loaded from file:/C:/Users/MY%20PC/IdeaProjects/java_final/db-derby-10.16.1.1-bin/lib/derby.jar
+java.vendor=JetBrains s.r.o.
+java.runtime.version=17.0.4.1+7-b469.62
+user.dir=C:\Users\MY PC\IdeaProjects\java_final
+os.name=Windows 10
 os.arch=amd64
 os.version=10.0
 derby.system.home=null
