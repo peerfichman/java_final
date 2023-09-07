@@ -1,19 +1,26 @@
 package il.ac.shenkar.model;
 import  java.util.Date;
 
+
 public class Cost {
+
+    private int id;
     private double sum;
     private int categoryID;
-    private String currency;
+    private Currency currency;
     private String desc;
     private Date time;
 
-    public Cost(double sum, int categoryID, String currency, String desc, Date time){
+    public Cost(double sum, int categoryID, Currency currency, String desc, Date time){
         setSum(sum);
         setCategoryID(categoryID);
         setCurrency(currency);
         setDesc(desc);
         setTime(time);
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
     public void setSum(double sum) {
         this.sum = sum;
@@ -21,8 +28,12 @@ public class Cost {
     public void setCategoryID(int categoryID) {
         this.categoryID = categoryID;
     }
-    public void setCurrency(String currency) {
+    public void setCurrency( Currency currency) {
         this.currency = currency;
+    }
+
+    public int getId() {
+        return id;
     }
     public void setDesc(String desc) {
         this.desc = desc;
@@ -38,7 +49,7 @@ public class Cost {
         return categoryID;
     }
 
-    public String getCurrency() {
+    public Currency getCurrency() {
         return currency;
     }
 
