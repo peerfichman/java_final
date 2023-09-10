@@ -6,6 +6,7 @@ import il.ac.shenkar.model.Currency;
 import il.ac.shenkar.viewmodel.ViewModel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,9 +24,21 @@ public class View {
     private JComboBox<Currency> currencyComboBox;
     private ViewModel VM = new ViewModel();
     private List<Category> categories;
+    private JPanel reportPanel = createReportDisplayPanel();
+
 
     private void updateCategories(){
         categories = VM.getAllCategories();
+    }
+
+    private String getCategoryNameByID(int id)
+    {
+        for(Category c : categories)
+        {
+            if(c.getId() == id)
+                return c.getName();
+        }
+        return "none";
     }
 
     public View() {
@@ -315,15 +328,62 @@ public class View {
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Handle report generation here based on the selected criteria
-                String report = generateReport(
-                        specificDateCheckBox.isSelected(),
-                        (Integer) dayComboBox.getSelectedItem(),
-                        (Integer) monthComboBox.getSelectedItem(),
-                        (Integer) yearComboBox.getSelectedItem()
-                );
-
-                // Display the report or take further action
+                System.out.println("CHECKBOX IS "+specificDateCheckBox.isSelected());
+                if (specificDateCheckBox.isSelected() == true) // specific date with day month year.
+                {
+                    DefaultTableModel tableModel = new DefaultTableModel();
+                    tableModel.addColumn("Category");
+                    tableModel.addColumn("Amount");
+                    tableModel.addColumn("Currency");
+                    tableModel.addColumn("Date");
+                    tableModel.addColumn("Description");
+                    int selectedYear = (Integer) yearComboBox.getSelectedItem();
+                    int selectedMonth = (Integer) monthComboBox.getSelectedItem();
+                    int selectedDay = (Integer) dayComboBox.getSelectedItem();
+                    LocalDate localDate = LocalDate.of(selectedYear, selectedMonth, selectedDay);
+                    java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
+                    List<Cost> reportDataList = VM.getCostsByDate(sqlDate);
+                    for (Cost data :  reportDataList) {
+                        tableModel.addRow(new Object[]{
+                                getCategoryNameByID(data.getCategoryID()),
+                                data.getSum(),
+                                data.getCurrency(),
+                                data.getTime().toString(),
+                                data.getDesc()
+                        });
+                    }
+                    reportPanel.removeAll();
+                    reportPanel.add(scrollPane, BorderLayout.CENTER);
+                    reportPanel.add(backButton, BorderLayout.SOUTH);
+                    reportPanel.setVisible(true);
+                    switchToPanel(reportPanel);
+                }
+                else // only month and year (without a day)
+                {
+                    DefaultTableModel tableModel = new DefaultTableModel();
+                    tableModel.addColumn("Category");
+                    tableModel.addColumn("Amount");
+                    tableModel.addColumn("Currency");
+                    tableModel.addColumn("Date");
+                    tableModel.addColumn("Description");
+                    int selectedYear = (Integer) yearComboBox.getSelectedItem();
+                    int selectedMonth = (Integer) monthComboBox.getSelectedItem();
+                    List<Cost> reportDataList = VM.getCostsByMonth(selectedYear,selectedMonth);
+                    for (Cost data :  reportDataList) {
+                        tableModel.addRow(new Object[]{
+                                getCategoryNameByID(data.getCategoryID()),
+                                data.getSum(),
+                                data.getCurrency(),
+                                data.getTime().toString(),
+                                data.getDesc()
+                        });
+                    }
+                    reportPanel.removeAll();
+                    reportPanel.add(scrollPane, BorderLayout.CENTER);
+                    reportPanel.add(backButton, BorderLayout.SOUTH);
+                    reportPanel.setVisible(true);
+                    switchToPanel(reportPanel);
+                }
             }
         });
 
@@ -347,22 +407,38 @@ public class View {
 
         return panel;
     }
+    private JPanel createReportDisplayPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
 
+        DefaultTableModel tableModel = new DefaultTableModel();
+        JTable reportTable = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(reportTable);
 
-    private String generateReport(boolean specificDay, int day, int month, int year) {
-        StringBuilder report = new StringBuilder("Report Criteria:\n");
+        // Set the table to fill the entire available space
+        scrollPane.setPreferredSize(new Dimension(600, 400)); // Adjust the dimensions as needed
 
-        if (specificDay) {
-            report.append("Specific Day: ").append(day).append("/").append(month).append("/").append(year).append("\n");
-        } else {
-            report.append("Full Month: ").append(month).append("/").append(year).append("\n");
-        }
+        panel.add(scrollPane, BorderLayout.CENTER);
 
-        // You can add more details and generate the actual report here
-        // For example, fetching data from a database or processing existing data
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton backButton = createButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switchToPanel(createReportPanel());
+            }
+        });
+        buttonPanel.add(backButton);
 
-        return report.toString();
+        // Locate the back button at the bottom of the screen
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        return panel;
     }
+
+
+
+
 
     private JButton createButton(String label) {
         JButton button = new JButton(label);
