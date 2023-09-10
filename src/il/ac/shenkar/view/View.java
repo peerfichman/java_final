@@ -325,11 +325,29 @@ public class View {
         // Create 'create report' button
         JButton createButton = new JButton("Submit");
         createButton.setFont(new Font("Arial", Font.BOLD, 18));
+
+        // Define scrollPane and backButton here
+        DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.addColumn("Category");
+        tableModel.addColumn("Amount");
+        tableModel.addColumn("Currency");
+        tableModel.addColumn("Date");
+        tableModel.addColumn("Description");
+
+        JScrollPane scrollPane = new JScrollPane(new JTable(tableModel));
+
+        JButton backButton = createButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switchToPanel(createHomePanel());
+            }
+        });
+
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("CHECKBOX IS "+specificDateCheckBox.isSelected());
-                if (specificDateCheckBox.isSelected() == true) // specific date with day month year.
+                if (specificDateCheckBox.isSelected()) // specific date with day month year.
                 {
                     DefaultTableModel tableModel = new DefaultTableModel();
                     tableModel.addColumn("Category");
@@ -343,7 +361,7 @@ public class View {
                     LocalDate localDate = LocalDate.of(selectedYear, selectedMonth, selectedDay);
                     java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
                     List<Cost> reportDataList = VM.getCostsByDate(sqlDate);
-                    for (Cost data :  reportDataList) {
+                    for (Cost data : reportDataList) {
                         tableModel.addRow(new Object[]{
                                 getCategoryNameByID(data.getCategoryID()),
                                 data.getSum(),
@@ -357,8 +375,7 @@ public class View {
                     reportPanel.add(backButton, BorderLayout.SOUTH);
                     reportPanel.setVisible(true);
                     switchToPanel(reportPanel);
-                }
-                else // only month and year (without a day)
+                } else // only month and year (without a day)
                 {
                     DefaultTableModel tableModel = new DefaultTableModel();
                     tableModel.addColumn("Category");
@@ -368,8 +385,8 @@ public class View {
                     tableModel.addColumn("Description");
                     int selectedYear = (Integer) yearComboBox.getSelectedItem();
                     int selectedMonth = (Integer) monthComboBox.getSelectedItem();
-                    List<Cost> reportDataList = VM.getCostsByMonth(selectedYear,selectedMonth);
-                    for (Cost data :  reportDataList) {
+                    List<Cost> reportDataList = VM.getCostsByMonth(selectedYear, selectedMonth);
+                    for (Cost data : reportDataList) {
                         tableModel.addRow(new Object[]{
                                 getCategoryNameByID(data.getCategoryID()),
                                 data.getSum(),
@@ -391,15 +408,6 @@ public class View {
         gbc.gridy = 4;
         gbc.gridwidth = 2;
         criteriaPanel.add(createButton, gbc);
-
-        // Create back button
-        JButton backButton = createButton("Back");
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switchToPanel(createHomePanel());
-            }
-        });
 
         panel.add(titleLabel, BorderLayout.NORTH);
         panel.add(criteriaPanel, BorderLayout.CENTER);
