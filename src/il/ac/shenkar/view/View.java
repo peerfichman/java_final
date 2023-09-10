@@ -306,14 +306,18 @@ public class View {
 
         gbc.gridx = 1;
         criteriaPanel.add(yearComboBox, gbc);
-
+        dayComboBox.setEnabled(false);
+        dayLabel.setEnabled(false);
         JCheckBox specificDateCheckBox = new JCheckBox("Specific Date");
         specificDateCheckBox.setFont(new Font("Arial", Font.PLAIN, 16));
         specificDateCheckBox.setOpaque(false);
         specificDateCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dayComboBox.setEnabled(specificDateCheckBox.isSelected());
+
+                boolean isChecked = specificDateCheckBox.isSelected();
+                dayComboBox.setEnabled(isChecked);
+                dayLabel.setEnabled(isChecked);
             }
         });
 
@@ -349,12 +353,7 @@ public class View {
             public void actionPerformed(ActionEvent e) {
                 if (specificDateCheckBox.isSelected()) // specific date with day month year.
                 {
-                    DefaultTableModel tableModel = new DefaultTableModel();
-                    tableModel.addColumn("Category");
-                    tableModel.addColumn("Amount");
-                    tableModel.addColumn("Currency");
-                    tableModel.addColumn("Date");
-                    tableModel.addColumn("Description");
+
                     int selectedYear = (Integer) yearComboBox.getSelectedItem();
                     int selectedMonth = (Integer) monthComboBox.getSelectedItem();
                     int selectedDay = (Integer) dayComboBox.getSelectedItem();
@@ -377,12 +376,7 @@ public class View {
                     switchToPanel(reportPanel);
                 } else // only month and year (without a day)
                 {
-                    DefaultTableModel tableModel = new DefaultTableModel();
-                    tableModel.addColumn("Category");
-                    tableModel.addColumn("Amount");
-                    tableModel.addColumn("Currency");
-                    tableModel.addColumn("Date");
-                    tableModel.addColumn("Description");
+
                     int selectedYear = (Integer) yearComboBox.getSelectedItem();
                     int selectedMonth = (Integer) monthComboBox.getSelectedItem();
                     List<Cost> reportDataList = VM.getCostsByMonth(selectedYear, selectedMonth);
