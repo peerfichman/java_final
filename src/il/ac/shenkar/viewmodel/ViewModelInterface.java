@@ -13,7 +13,7 @@ public interface ViewModelInterface {
     public void deleteCategory (Category c);
     public void editCategory (int id, Category c);
     public List<Cost> getAllCosts ();
-    public List<Cost> getCostsBetweenDates(Date start, Date end);
+    public List<Cost> getCostsByDate(Date date);
     public void addCost (Cost c);
     public void deleteCost (Cost c);
     public void editCost (int id, Cost c);

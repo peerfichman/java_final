@@ -93,12 +93,32 @@ public class CostDAO implements DAO<Cost> {
 
     }
 
-    public List<Cost> getBetweenDates(Date start, Date end) {
+    public List<Cost> getCostsByDate(Date date) {
         List<Cost> costs = new LinkedList<>();
         String pattern = "dd.MM.YYYY";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         try {
-            ResultSet rs = conn.stm.executeQuery("SELECT * FROM  costs WHERE  date =" + simpleDateFormat.format(start));
+            ResultSet rs = conn.stm.executeQuery("SELECT * FROM  costs WHERE  date ='" + simpleDateFormat.format(date)+"'");
+            while (rs.next()) {
+                costs.add(new Cost(
+                        rs.getDouble("amount"),
+                        rs.getInt("cat_id"),
+                        Currency.valueOf(rs.getString("currency")),
+                        rs.getString("description"),
+                        new Date(rs.getDate("date").getTime())
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return costs;
+    }
+
+    public List<Cost> getCostsByMonth(int year, int month)
+    {
+        List<Cost> costs = new LinkedList<>();
+        try {
+            ResultSet rs = conn.stm.executeQuery("SELECT * FROM  costs WHERE month(date)="+month+" AND year(date)="+year);
             while (rs.next()) {
                 costs.add(new Cost(
                         rs.getDouble("amount"),
@@ -114,4 +134,6 @@ public class CostDAO implements DAO<Cost> {
         return costs;
     }
 }
+
+
 

@@ -39,8 +39,8 @@ public class ViewModel implements ViewModelInterface {
     }
 
     @Override
-    public List<Cost> getCostsBetweenDates(Date start, Date end) {
-        return costDAO.getBetweenDates(start, end);
+    public List<Cost> getCostsByDate(Date date) {
+        return costDAO.getCostsByDate(date);
     }
 
     @Override
@@ -58,4 +58,7 @@ public class ViewModel implements ViewModelInterface {
         costDAO.update(id, c);
 
     }
+
+    public List<Cost> getCostsByMonth(int year,int month) { return costDAO.getCostsByMonth(year,month);}
+
 }
