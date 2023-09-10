@@ -325,6 +325,13 @@ public class View {
         // Create 'create report' button
         JButton createButton = new JButton("Submit");
         createButton.setFont(new Font("Arial", Font.BOLD, 18));
+        JButton backButton = createButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switchToPanel(createHomePanel());
+            }
+        });
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -353,7 +360,7 @@ public class View {
                         });
                     }
                     reportPanel.removeAll();
-                    reportPanel.add(scrollPane, BorderLayout.CENTER);
+//                    reportPanel.add(scrollPane, BorderLayout.CENTER);
                     reportPanel.add(backButton, BorderLayout.SOUTH);
                     reportPanel.setVisible(true);
                     switchToPanel(reportPanel);
@@ -379,7 +386,7 @@ public class View {
                         });
                     }
                     reportPanel.removeAll();
-                    reportPanel.add(scrollPane, BorderLayout.CENTER);
+//                    reportPanel.add(scrollPane, BorderLayout.CENTER);
                     reportPanel.add(backButton, BorderLayout.SOUTH);
                     reportPanel.setVisible(true);
                     switchToPanel(reportPanel);
@@ -393,13 +400,7 @@ public class View {
         criteriaPanel.add(createButton, gbc);
 
         // Create back button
-        JButton backButton = createButton("Back");
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switchToPanel(createHomePanel());
-            }
-        });
+
 
         panel.add(titleLabel, BorderLayout.NORTH);
         panel.add(criteriaPanel, BorderLayout.CENTER);
