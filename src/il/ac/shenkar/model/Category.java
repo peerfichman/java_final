@@ -23,4 +23,7 @@ public class Category {
         this.id = id;
     }
 
+    public String toString(){
+        return name;
+    }
 }

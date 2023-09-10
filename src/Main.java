@@ -1,20 +1,14 @@
-import il.ac.shenkar.model.*;
+import il.ac.shenkar.view.View;
 
-import java.util.List;
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-
-        CategoryDAO cat = new CategoryDAO();
-        cat.save(new Category(-1, "test1"));
-        cat.save(new Category(-1, "test2"));
-        cat.save(new Category(-1, "test3"));
-
-        List<Category> lcat = cat.getAll();
-
-        System.out.println(cat.get(lcat.get(1).getId()).getName());
-
-
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new View();
+            }
+        });
     }
 
 }

@@ -1,18 +1,35 @@
 package il.ac.shenkar.view;
 
+import il.ac.shenkar.model.Category;
+import il.ac.shenkar.model.Cost;
+import il.ac.shenkar.model.Currency;
+import il.ac.shenkar.viewmodel.ViewModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.sql.Date;
 
 public class View {
 
     private JFrame frame;
     private JPanel currentPanel;
-    private JComboBox<String> categoryComboBox;
-    private JComboBox<String> currencyComboBox;
+    private JComboBox<Category> categoryComboBox;
+    private JComboBox<Currency> currencyComboBox;
+    private ViewModel VM = new ViewModel();
+    private List<Category> categories;
+
+    private void updateCategories(){
+        categories = VM.getAllCategories();
+    }
 
     public View() {
+        categories = VM.getAllCategories();
         frame = createMainFrame();
         currentPanel = createHomePanel();
         frame.add(currentPanel);
@@ -91,7 +108,9 @@ public class View {
         categoryLabel.setFont(new Font("Arial", Font.BOLD, 18));
         formPanel.add(categoryLabel, gbc);
 
-        categoryComboBox = new JComboBox<>(new String[]{"Food", "Fuel", "Loans", "Clothes", "Rent", "Utilities", "Entertainment", "Healthcare", "Transportation", "Education", "Miscellaneous"});
+
+        DefaultComboBoxModel<Category> categoryDefaultComboBoxModel = new DefaultComboBoxModel<>(categories.toArray(new Category[0]));
+        categoryComboBox = new JComboBox<>(categoryDefaultComboBoxModel);
         gbc.gridx = 1;
         formPanel.add(categoryComboBox, gbc);
 
@@ -101,7 +120,9 @@ public class View {
         gbc.gridy++;
         formPanel.add(currencyLabel, gbc);
 
-        currencyComboBox = new JComboBox<>(new String[]{"JPY", "GBP", "CAD", "AUD", "NIS", "CHF", "USD", "EUR"});
+        Currency[] currenciesList = Currency.values();
+        Arrays.sort(currenciesList, Comparator.comparing(Enum::name));
+        currencyComboBox = new JComboBox<>(currenciesList);
         gbc.gridx = 1;
         formPanel.add(currencyComboBox, gbc);
 
@@ -139,13 +160,13 @@ public class View {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Handle expense submission here
-                String category = (String) categoryComboBox.getSelectedItem();
-                String currency = (String) currencyComboBox.getSelectedItem();
+                Category category = (Category) categoryComboBox.getSelectedItem();
+                Currency currency = (Currency) currencyComboBox.getSelectedItem();
                 String amount = amountTextField.getText();
                 String description = descriptionTextArea.getText();
 
-                // Process the expense data
-                // ...
+                Cost newCost = new Cost(Double.parseDouble(amount),category.getId(), currency, description, new Date(System.currentTimeMillis()));
+                VM.addCost(newCost);
 
                 // Reset form fields
                 amountTextField.setText("");
@@ -199,8 +220,8 @@ public class View {
             public void actionPerformed(ActionEvent e) {
                 String categoryName = categoryNameTextField.getText();
                 // Process and add the new category here
-                // ...
-
+                VM.addCategory(new Category(-1,categoryName));
+                updateCategories();
                 // Clear the text field
                 categoryNameTextField.setText("");
             }
@@ -280,8 +301,6 @@ public class View {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dayComboBox.setEnabled(specificDateCheckBox.isSelected());
-                monthComboBox.setEnabled(specificDateCheckBox.isSelected());
-                yearComboBox.setEnabled(specificDateCheckBox.isSelected());
             }
         });
 
@@ -359,11 +378,5 @@ public class View {
         frame.repaint();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new View();
-            }
-        });
-    }
+
 }
