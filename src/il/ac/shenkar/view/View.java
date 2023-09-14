@@ -29,8 +29,6 @@ public class View {
     private ViewModel VM = new ViewModel();
     private List<Category> categories;
     private JPanel reportPanel = createReportDisplayPanel();
-    private  ErrorPanel errorPanel;
-
 
     private void updateCategories() throws CategoryDAOException {
         categories = VM.getAllCategories();
@@ -47,13 +45,11 @@ public class View {
     }
 
     public View() {
-        errorPanel =  new ErrorPanel();
         try {
             categories = VM.getAllCategories();
         } catch (CategoryDAOException e) {
-            errorPanel.setErrorText(e.getMessage());
+            System.err.println(e.getMessage());
         }
-        frame.add(errorPanel,BorderLayout.SOUTH);
         frame = createMainFrame();
         currentPanel = createHomePanel();
         frame.add(currentPanel);
@@ -66,7 +62,6 @@ public class View {
         frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        frame.add(errorPanel,BorderLayout.SOUTH);
         return frame;
     }
 
@@ -175,7 +170,7 @@ public class View {
 
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 2; // Span two columns
+        gbc.gridwidth = 2;
         JButton submitButton = new JButton("Submit");
         submitButton.setFont(new Font("Arial", Font.BOLD, 18));
         gbc.anchor = GridBagConstraints.CENTER; // Center the button
@@ -198,9 +193,8 @@ public class View {
                     Cost newCost = new Cost(amount, category.getId(), currency, description, new Date(System.currentTimeMillis()));
                     try {
                         VM.addCost(newCost);
-                        errorPanel.setSuccessText("Cost added Successfully");
                     } catch (CostDAOException ex) {
-                        errorPanel.setErrorText(ex.getMessage());
+                        System.err.println(ex.getMessage());
                     }
 
                     // Reset form fields
@@ -210,7 +204,6 @@ public class View {
             }
         });
 
-        // Add a document listener to the amountTextField to enable/disable the submit button based on the amount
         amountTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -267,7 +260,7 @@ public class View {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(20, 5, 5, 5); // Margin from the top
+        gbc.insets = new Insets(20, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
 
         JLabel categoryNameLabel = new JLabel("Category Name:");
@@ -284,13 +277,11 @@ public class View {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String categoryName = categoryNameTextField.getText();
-                // Process and add the new category here
                 try {
                     VM.addCategory(new Category(-1, categoryName));
                     updateCategories();
-                    errorPanel.setSuccessText("Category add successfully");
                 }catch (CategoryDAOException exp){
-                    errorPanel.setErrorText(exp.getMessage());
+                    System.err.println(exp.getMessage());
                 }
                 // Clear the text field
                 categoryNameTextField.setText("");
@@ -299,8 +290,8 @@ public class View {
 
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 2; // Span two columns
-        gbc.anchor = GridBagConstraints.CENTER; // Center the button horizontally
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(addButton, gbc);
 
         JButton backButton = createButton("Back");
@@ -420,8 +411,8 @@ public class View {
                     try {
                         reportDataList = VM.getCostsByDate(sqlDate);
                     } catch (CostDAOException ex) {
-                      errorPanel.setErrorText(ex.getMessage());
-                      switchToPanel(createHomePanel());
+                        System.err.println(ex.getMessage());
+                        switchToPanel(createHomePanel());
                     }
                     for (Cost data : reportDataList) {
                         tableModel.addRow(new Object[]{
@@ -447,7 +438,7 @@ public class View {
                     try {
                         reportDataList = VM.getCostsByMonth(selectedYear, selectedMonth);
                     } catch (CostDAOException ex) {
-                        errorPanel.setErrorText(ex.getMessage());
+                        System.err.println(ex.getMessage());
                         switchToPanel(createHomePanel());
                     }
                     for (Cost data : reportDataList) {
@@ -486,12 +477,8 @@ public class View {
         DefaultTableModel tableModel = new DefaultTableModel();
         JTable reportTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(reportTable);
-
-        // Set the table to fill the entire available space
-        scrollPane.setPreferredSize(new Dimension(600, 400)); // Adjust the dimensions as needed
-
+        scrollPane.setPreferredSize(new Dimension(600, 400));
         panel.add(scrollPane, BorderLayout.CENTER);
-
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton backButton = createButton("Back");
         backButton.addActionListener(new ActionListener() {
@@ -501,16 +488,10 @@ public class View {
             }
         });
         buttonPanel.add(backButton);
-
-        // Locate the back button at the bottom of the screen
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
         return panel;
     }
-
-
-
-
 
     private JButton createButton(String label) {
         JButton button = new JButton(label);
