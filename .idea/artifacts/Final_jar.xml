@@ -3,7 +3,8 @@
     <output-path>$PROJECT_DIR$/out/artifacts/Final_jar</output-path>
     <root id="archive" name="Final.jar">
       <element id="module-output" name="Final" />
-      <element id="file-copy" path="$PROJECT_DIR$/db-derby-10.16.1.1-bin/lib/derby.jar" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/derbyshared.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/derby.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

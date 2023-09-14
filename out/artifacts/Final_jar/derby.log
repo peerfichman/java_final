@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Thu Sep 14 13:48:09 IDT 2023:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.16.1.1 - (1901046): instance a816c00e-018a-934e-2fa4-00000f38a5b8 
+on database directory C:\Users\MY PC\IdeaProjects\java_final\out\artifacts\Final_jar\accountingDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@33909752 
+Loaded from file:/C:/Users/MY%20PC/IdeaProjects/java_final/out/artifacts/Final_jar/Final.jar
+java.vendor=Oracle Corporation
+java.runtime.version=20.0.2+9-78
+user.dir=C:\Users\MY PC\IdeaProjects\java_final\out\artifacts\Final_jar
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
