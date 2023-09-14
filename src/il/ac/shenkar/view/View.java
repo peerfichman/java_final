@@ -1,5 +1,7 @@
 package il.ac.shenkar.view;
 
+import il.ac.shenkar.exception.CategoryDAOException;
+import il.ac.shenkar.exception.CostDAOException;
 import il.ac.shenkar.model.Category;
 import il.ac.shenkar.model.Cost;
 import il.ac.shenkar.model.Currency;
@@ -27,9 +29,10 @@ public class View {
     private ViewModel VM = new ViewModel();
     private List<Category> categories;
     private JPanel reportPanel = createReportDisplayPanel();
+    private  ErrorPanel errorPanel;
 
 
-    private void updateCategories(){
+    private void updateCategories() throws CategoryDAOException {
         categories = VM.getAllCategories();
     }
 
@@ -44,11 +47,18 @@ public class View {
     }
 
     public View() {
-        categories = VM.getAllCategories();
+        errorPanel =  new ErrorPanel();
+        try {
+            categories = VM.getAllCategories();
+        } catch (CategoryDAOException e) {
+            errorPanel.setErrorText(e.getMessage());
+        }
+        frame.add(errorPanel,BorderLayout.SOUTH);
         frame = createMainFrame();
         currentPanel = createHomePanel();
         frame.add(currentPanel);
         frame.setVisible(true);
+
     }
 
     private JFrame createMainFrame() {
@@ -56,6 +66,7 @@ public class View {
         frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+        frame.add(errorPanel,BorderLayout.SOUTH);
         return frame;
     }
 
@@ -185,7 +196,12 @@ public class View {
 
                 if (amount > 0) {
                     Cost newCost = new Cost(amount, category.getId(), currency, description, new Date(System.currentTimeMillis()));
-                    VM.addCost(newCost);
+                    try {
+                        VM.addCost(newCost);
+                        errorPanel.setSuccessText("Cost added Successfully");
+                    } catch (CostDAOException ex) {
+                        errorPanel.setErrorText(ex.getMessage());
+                    }
 
                     // Reset form fields
                     amountTextField.setText("");
@@ -269,8 +285,13 @@ public class View {
             public void actionPerformed(ActionEvent e) {
                 String categoryName = categoryNameTextField.getText();
                 // Process and add the new category here
-                VM.addCategory(new Category(-1,categoryName));
-                updateCategories();
+                try {
+                    VM.addCategory(new Category(-1, categoryName));
+                    updateCategories();
+                    errorPanel.setSuccessText("Category add successfully");
+                }catch (CategoryDAOException exp){
+                    errorPanel.setErrorText(exp.getMessage());
+                }
                 // Clear the text field
                 categoryNameTextField.setText("");
             }
@@ -395,7 +416,13 @@ public class View {
                     int selectedDay = (Integer) dayComboBox.getSelectedItem();
                     LocalDate localDate = LocalDate.of(selectedYear, selectedMonth, selectedDay);
                     java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
-                    List<Cost> reportDataList = VM.getCostsByDate(sqlDate);
+                    List<Cost> reportDataList = null;
+                    try {
+                        reportDataList = VM.getCostsByDate(sqlDate);
+                    } catch (CostDAOException ex) {
+                      errorPanel.setErrorText(ex.getMessage());
+                      switchToPanel(createHomePanel());
+                    }
                     for (Cost data : reportDataList) {
                         tableModel.addRow(new Object[]{
                                 getCategoryNameByID(data.getCategoryID()),
@@ -415,7 +442,14 @@ public class View {
 
                     int selectedYear = (Integer) yearComboBox.getSelectedItem();
                     int selectedMonth = (Integer) monthComboBox.getSelectedItem();
-                    List<Cost> reportDataList = VM.getCostsByMonth(selectedYear, selectedMonth);
+
+                    List<Cost> reportDataList = null;
+                    try {
+                        reportDataList = VM.getCostsByMonth(selectedYear, selectedMonth);
+                    } catch (CostDAOException ex) {
+                        errorPanel.setErrorText(ex.getMessage());
+                        switchToPanel(createHomePanel());
+                    }
                     for (Cost data : reportDataList) {
                         tableModel.addRow(new Object[]{
                                 getCategoryNameByID(data.getCategoryID()),

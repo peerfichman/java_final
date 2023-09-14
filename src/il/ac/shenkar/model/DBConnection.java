@@ -1,5 +1,7 @@
 package il.ac.shenkar.model;
 
+import il.ac.shenkar.exception.DBConnectionException;
+
 import java.sql.*;
 
 
@@ -8,12 +10,12 @@ public class DBConnection implements AutoCloseable{
     private Connection conn = null;
     private static DBConnection accountingDB = null;
 
-    private DBConnection()  {
+    private DBConnection()  throws DBConnectionException {
         try {
             conn = DriverManager.getConnection("jdbc:derby:accountingDB ;create=true");
             stm = conn.createStatement();
         } catch (SQLException e) {
-           e.printStackTrace();
+          throw new DBConnectionException(e.getMessage());
         }
 
         try{
@@ -24,7 +26,7 @@ public class DBConnection implements AutoCloseable{
             );
         } catch (SQLException e) {
             if (!e.getSQLState().equals("X0Y32"))
-                e.printStackTrace();
+                throw new DBConnectionException(e.getMessage());
         }
         try{
             stm.executeUpdate("CREATE TABLE costs ( " +
@@ -37,23 +39,23 @@ public class DBConnection implements AutoCloseable{
                     "FOREIGN KEY (cat_id) REFERENCES categories(cat_id))");
         } catch (SQLException e) {
             if (!e.getSQLState().equals("X0Y32"))
-                e.printStackTrace();
+                throw new DBConnectionException(e.getMessage());
         }
 
     }
-    public static synchronized DBConnection getInstance()
+    public static synchronized DBConnection getInstance() throws DBConnectionException
     {
         if (accountingDB == null)
             accountingDB = new DBConnection();
         return accountingDB;
     }
     @Override
-    public void close(){
+    public void close() throws DBConnectionException{
         try {
             if (stm != null) stm.close();
             if (conn != null) conn.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+           throw new DBConnectionException(e.getMessage());
         }
     }
 }

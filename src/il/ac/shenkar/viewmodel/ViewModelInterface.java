@@ -8,14 +8,14 @@ import java.util.List;
 
 public interface ViewModelInterface {
 
-    public List<Category> getAllCategories ();
-    public void addCategory (Category c);
-    public void deleteCategory (Category c);
-    public void editCategory (int id, Category c);
-    public List<Cost> getAllCosts ();
-    public List<Cost> getCostsByDate(Date date);
-    public void addCost (Cost c);
-    public void deleteCost (Cost c);
-    public void editCost (int id, Cost c);
+    public List<Category> getAllCategories () throws Exception;
+    public void addCategory (Category c)throws Exception;
+    public void deleteCategory (Category c)throws Exception;
+    public void editCategory (int id, Category c)throws Exception;
+    public List<Cost> getAllCosts ()throws Exception;
+    public List<Cost> getCostsByDate(Date date)throws Exception;
+    public void addCost (Cost c)throws Exception;
+    public void deleteCost (Cost c)throws Exception;
+    public void editCost (int id, Cost c)throws Exception;
 
 }

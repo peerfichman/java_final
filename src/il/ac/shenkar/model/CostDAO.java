@@ -1,15 +1,28 @@
 package il.ac.shenkar.model;
 
+import il.ac.shenkar.exception.CostDAOException;
+import il.ac.shenkar.exception.DBConnectionException;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.sql.Date;
+import java.util.concurrent.CompletionException;
 
 public class CostDAO implements DAO<Cost> {
+    private static final DBConnection conn;
+
+    static {
+        try {
+            conn = DBConnection.getInstance();
+        } catch (DBConnectionException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Override
-    public Cost get(int id) {
+    public Cost get(int id) throws Exception {
         try {
             ResultSet rs = conn.stm.executeQuery("SELECT * FROM costs WHERE cost_id = " + id);
             rs.next();
@@ -21,13 +34,12 @@ public class CostDAO implements DAO<Cost> {
                     new Date(rs.getDate("date").getTime())
             );
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+            throw new CostDAOException(e.getMessage());
+            }
     }
 
     @Override
-    public List<Cost> getAll() {
+    public List<Cost> getAll() throws CostDAOException {
         List<Cost> costs = new LinkedList<>();
         try {
             ResultSet rs = conn.stm.executeQuery("SELECT * FROM  costs");
@@ -41,13 +53,13 @@ public class CostDAO implements DAO<Cost> {
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new CostDAOException(e.getMessage());
         }
         return costs;
     }
 
     @Override
-    public void save(Cost c) {
+    public void save(Cost c) throws CostDAOException {
         String pattern = "dd.MM.YYYY";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         String dateSQL = simpleDateFormat.format(c.getTime());
@@ -60,12 +72,12 @@ public class CostDAO implements DAO<Cost> {
                     dateSQL + "')"
             );
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new CostDAOException(e.getMessage());
         }
     }
 
     @Override
-    public void update(int id, Cost c) {
+    public void update(int id, Cost c) throws CostDAOException {
         String pattern =  "dd.MM.YYYY";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         String dateSQL = simpleDateFormat.format(c.getTime());
@@ -79,21 +91,21 @@ public class CostDAO implements DAO<Cost> {
                     "date = '" + dateSQL + "'," +
                     "WHERE cost_id =" + c.getId());
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new CostDAOException(e.getMessage());
         }
     }
 
     @Override
-    public void delete(Cost c) {
+    public void delete(Cost c) throws CostDAOException {
         try {
             conn.stm.execute("DELETE FROM costs WHERE cost_id =" + c.getId());
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new CostDAOException(e.getMessage());
         }
 
     }
 
-    public List<Cost> getCostsByDate(Date date) {
+    public List<Cost> getCostsByDate(Date date) throws CostDAOException {
         List<Cost> costs = new LinkedList<>();
         String pattern = "dd.MM.YYYY";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -109,12 +121,12 @@ public class CostDAO implements DAO<Cost> {
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new CostDAOException(e.getMessage());
         }
         return costs;
     }
 
-    public List<Cost> getCostsByMonth(int year, int month)
+    public List<Cost> getCostsByMonth(int year, int month) throws CostDAOException
     {
         List<Cost> costs = new LinkedList<>();
         try {
@@ -129,7 +141,7 @@ public class CostDAO implements DAO<Cost> {
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new CostDAOException(e.getMessage());
         }
         return costs;
     }
