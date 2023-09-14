@@ -13,6 +13,16 @@ public class ViewModel implements ViewModelInterface {
     private final CostDAO costDAO = new CostDAO();
 
     @Override
+    public Category getCategory(int id){
+        return categoryDAO.get(id);
+    }
+
+    @Override
+    public Cost getCost(int id) {
+        return costDAO.get(id);
+    }
+
+    @Override
     public List<Category> getAllCategories() {
         return categoryDAO.getAll();
     }

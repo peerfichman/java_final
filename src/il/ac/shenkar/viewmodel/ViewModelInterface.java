@@ -7,7 +7,8 @@ import java.sql.Date;
 import java.util.List;
 
 public interface ViewModelInterface {
-
+    public Category getCategory(int id);
+    public Cost getCost(int id);
     public List<Category> getAllCategories ();
     public void addCategory (Category c);
     public void deleteCategory (Category c);

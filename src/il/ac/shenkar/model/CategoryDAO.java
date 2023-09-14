@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public class CategoryDAO implements DAO<Category> {
     @Override
-    public Category get(int id){
+    public Category get(int id) {
         try {
-            ResultSet cat = conn.stm.executeQuery("SELECT * FROM categories WHERE cat_id = "+ id);
+            ResultSet cat = conn.stm.executeQuery("SELECT * FROM categories WHERE cat_id = " + id);
             cat.next();
             return new Category(cat.getInt("cat_id"), cat.getString("cat_name"));
         } catch (SQLException e) {
@@ -18,12 +18,13 @@ public class CategoryDAO implements DAO<Category> {
         }
         return null;
     }
+
     @Override
-    public List<Category> getAll(){
-        List <Category> cats = new LinkedList<>();
+    public List<Category> getAll() {
+        List<Category> cats = new LinkedList<>();
         try {
             ResultSet rs = conn.stm.executeQuery("SELECT * FROM  categories");
-            while(rs.next()){
+            while (rs.next()) {
                 cats.add(new Category(
                         rs.getInt("cat_id"),
                         rs.getString("cat_name")
@@ -38,14 +39,16 @@ public class CategoryDAO implements DAO<Category> {
     @Override
     public void save(Category c) {
         try {
-            conn.stm.executeUpdate("INSERT INTO categories (cat_name) VALUES ('"+ c.getName()+"')");
+            conn.stm.executeUpdate("INSERT INTO categories (cat_name) VALUES ('" + c.getName() + "')");
         } catch (SQLException e) {
-            e.printStackTrace();        }
+            e.printStackTrace();
+        }
     }
+
     @Override
     public void update(int id, Category c) {
         try {
-            conn.stm.executeUpdate("UPDATE categories SET cat_name = '"+ c.getName()+"'WHERE cat_id =" + c.getId());
+            conn.stm.executeUpdate("UPDATE categories SET cat_name = '" + c.getName() + "'WHERE cat_id =" + c.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -56,7 +59,9 @@ public class CategoryDAO implements DAO<Category> {
         try {
             conn.stm.execute("DELETE FROM categories WHERE cat_id =" + c.getId());
         } catch (SQLException e) {
-            e.printStackTrace();        }
+            e.printStackTrace();
+        }
 
     }
 }
+
