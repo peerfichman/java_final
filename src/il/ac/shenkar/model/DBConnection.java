@@ -1,26 +1,32 @@
 package il.ac.shenkar.model;
-
 import il.ac.shenkar.exception.DBConnectionException;
-
 import java.sql.*;
 
-
-public class DBConnection implements AutoCloseable{
+/**
+ * DBConnection class is responsible for managing the database connection.
+ * It is implemented as a singleton to ensure a single connection instance.
+ */
+public class DBConnection implements AutoCloseable {
     public Statement stm = null;
     private Connection conn = null;
     private static DBConnection accountingDB = null;
 
-    private DBConnection()  throws DBConnectionException {
+    /**
+     * Private constructor to create a database connection.
+     *
+     * @throws DBConnectionException If an error occurs during database connection setup.
+     */
+    private DBConnection() throws DBConnectionException {
         try {
-            conn = DriverManager.getConnection("jdbc:derby:accountingDB ;create=true");
+            conn = DriverManager.getConnection("jdbc:derby:accountingDB;create=true");
             stm = conn.createStatement();
         } catch (SQLException e) {
-          throw new DBConnectionException(e.getMessage());
+            throw new DBConnectionException(e.getMessage());
         }
 
-        try{
+        try {
             stm.executeUpdate(
-                        "CREATE TABLE categories ( " +
+                    "CREATE TABLE categories ( " +
                             "cat_id INT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) PRIMARY KEY, " +
                             "cat_name VARCHAR(50) NOT NULL )"
             );
@@ -28,7 +34,7 @@ public class DBConnection implements AutoCloseable{
             if (!e.getSQLState().equals("X0Y32"))
                 throw new DBConnectionException(e.getMessage());
         }
-        try{
+        try {
             stm.executeUpdate("CREATE TABLE costs ( " +
                     "cost_id INT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) PRIMARY KEY, " +
                     "cat_id INT NOT NULL, " +
@@ -41,21 +47,32 @@ public class DBConnection implements AutoCloseable{
             if (!e.getSQLState().equals("X0Y32"))
                 throw new DBConnectionException(e.getMessage());
         }
-
     }
-    public static synchronized DBConnection getInstance() throws DBConnectionException
-    {
+
+    /**
+     * Get an instance of the DBConnection (Singleton pattern).
+     *
+     * @return An instance of the DBConnection.
+     * @throws DBConnectionException If an error occurs during instance creation.
+     */
+    public static synchronized DBConnection getInstance() throws DBConnectionException {
         if (accountingDB == null)
             accountingDB = new DBConnection();
         return accountingDB;
     }
+
+    /**
+     * Closes the database connection and statement.
+     *
+     * @throws DBConnectionException If an error occurs during closing.
+     */
     @Override
-    public void close() throws DBConnectionException{
+    public void close() throws DBConnectionException {
         try {
             if (stm != null) stm.close();
             if (conn != null) conn.close();
         } catch (SQLException e) {
-           throw new DBConnectionException(e.getMessage());
+            throw new DBConnectionException(e.getMessage());
         }
     }
 }

@@ -20,6 +20,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.sql.Date;
 
+/**
+ * This class represents the main view of the Cost Manager application.
+ */
 public class View {
 
     private JFrame frame;
@@ -30,20 +33,32 @@ public class View {
     private List<Category> categories;
     private JPanel reportPanel = createReportDisplayPanel();
 
+    /**
+     * Update the list of categories from the data source.
+     *
+     * @throws CategoryDAOException if an error occurs while fetching categories.
+     */
     private void updateCategories() throws CategoryDAOException {
         categories = VM.getAllCategories();
     }
 
-    private String getCategoryNameByID(int id)
-    {
-        for(Category c : categories)
-        {
-            if(c.getId() == id)
+    /**
+     * Get the name of a category by its ID.
+     *
+     * @param id The ID of the category.
+     * @return The name of the category or "none" if not found.
+     */
+    private String getCategoryNameByID(int id) {
+        for (Category c : categories) {
+            if (c.getId() == id)
                 return c.getName();
         }
         return "none";
     }
 
+    /**
+     * Create a new instance of the View class.
+     */
     public View() {
         try {
             categories = VM.getAllCategories();
@@ -54,9 +69,13 @@ public class View {
         currentPanel = createHomePanel();
         frame.add(currentPanel);
         frame.setVisible(true);
-
     }
 
+    /**
+     * Create the main application frame.
+     *
+     * @return The main application frame.
+     */
     private JFrame createMainFrame() {
         JFrame frame = new JFrame("Cost Manager - Pe'er & Itay");
         frame.setSize(800, 600);
@@ -65,6 +84,11 @@ public class View {
         return frame;
     }
 
+    /**
+     * Create the home panel with navigation buttons.
+     *
+     * @return The home panel.
+     */
     private JPanel createHomePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -109,6 +133,11 @@ public class View {
         return panel;
     }
 
+    /**
+     * Create the "Add Expense" panel.
+     *
+     * @return The "Add Expense" panel.
+     */
     private JPanel createAddExpensePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -173,16 +202,13 @@ public class View {
         gbc.gridwidth = 2;
         JButton submitButton = new JButton("Submit");
         submitButton.setFont(new Font("Arial", Font.BOLD, 18));
-        gbc.anchor = GridBagConstraints.CENTER; // Center the button
+        gbc.anchor = GridBagConstraints.CENTER;
         formPanel.add(submitButton, gbc);
-
-        // Disable the submit button initially
         submitButton.setEnabled(false);
 
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Handle expense submission here
                 Category category = (Category) categoryComboBox.getSelectedItem();
                 Currency currency = (Currency) currencyComboBox.getSelectedItem();
                 String amountText = amountTextField.getText();
@@ -197,7 +223,6 @@ public class View {
                         System.err.println(ex.getMessage());
                     }
 
-                    // Reset form fields
                     amountTextField.setText("");
                     descriptionTextArea.setText("");
                 }
@@ -246,7 +271,11 @@ public class View {
         return panel;
     }
 
-
+    /**
+     * Create the "Add Category" panel.
+     *
+     * @return The "Add Category" panel.
+     */
     private JPanel createAddCategoryPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -280,10 +309,9 @@ public class View {
                 try {
                     VM.addCategory(new Category(-1, categoryName));
                     updateCategories();
-                }catch (CategoryDAOException exp){
+                } catch (CategoryDAOException exp) {
                     System.err.println(exp.getMessage());
                 }
-                // Clear the text field
                 categoryNameTextField.setText("");
             }
         });
@@ -308,6 +336,12 @@ public class View {
 
         return panel;
     }
+
+    /**
+     * Create the "Reports" panel.
+     *
+     * @return The "Reports" panel.
+     */
     private JPanel createReportPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -321,7 +355,7 @@ public class View {
 
         JLabel dayLabel = new JLabel("Day");
         dayLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        Integer[] days = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31};
+        Integer[] days = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
         JComboBox<Integer> dayComboBox = new JComboBox<>(days);
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -335,7 +369,7 @@ public class View {
 
         JLabel monthLabel = new JLabel("Month");
         monthLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        Integer[] months = {1,2,3,4,5,6,7,8,9,10,11,12};
+        Integer[] months = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         JComboBox<Integer> monthComboBox = new JComboBox<>(months);
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -362,7 +396,6 @@ public class View {
         specificDateCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 boolean isChecked = specificDateCheckBox.isSelected();
                 dayComboBox.setEnabled(isChecked);
                 dayLabel.setEnabled(isChecked);
@@ -374,11 +407,9 @@ public class View {
         gbc.gridwidth = 2;
         criteriaPanel.add(specificDateCheckBox, gbc);
 
-        // Create 'create report' button
         JButton createButton = new JButton("Submit");
         createButton.setFont(new Font("Arial", Font.BOLD, 18));
 
-        // Define scrollPane and backButton here
         DefaultTableModel tableModel = new DefaultTableModel();
         tableModel.addColumn("Category");
         tableModel.addColumn("Amount");
@@ -470,6 +501,12 @@ public class View {
 
         return panel;
     }
+
+    /**
+     * Create the panel for displaying reports.
+     *
+     * @return The panel for displaying reports.
+     */
     private JPanel createReportDisplayPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -493,12 +530,23 @@ public class View {
         return panel;
     }
 
+    /**
+     * Create a button with the given label.
+     *
+     * @param label The label for the button.
+     * @return The created button.
+     */
     private JButton createButton(String label) {
         JButton button = new JButton(label);
         button.setFont(new Font("Arial", Font.PLAIN, 18));
         return button;
     }
 
+    /**
+     * Switch to a new panel within the frame.
+     *
+     * @param newPanel The new panel to switch to.
+     */
     private void switchToPanel(JPanel newPanel) {
         frame.remove(currentPanel);
         currentPanel = newPanel;
@@ -506,6 +554,4 @@ public class View {
         frame.revalidate();
         frame.repaint();
     }
-
-
 }

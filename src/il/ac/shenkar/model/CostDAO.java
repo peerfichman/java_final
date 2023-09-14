@@ -9,8 +9,10 @@ import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.sql.Date;
-import java.util.concurrent.CompletionException;
 
+/**
+ * CostDAO class implements the DAO pattern for Cost objects.
+ */
 public class CostDAO implements DAO<Cost> {
     private static final DBConnection conn;
 
@@ -21,8 +23,9 @@ public class CostDAO implements DAO<Cost> {
             throw new RuntimeException(e);
         }
     }
+
     @Override
-    public Cost get(int id) throws Exception {
+    public Cost get(int id) throws CostDAOException {
         try {
             ResultSet rs = conn.stm.executeQuery("SELECT * FROM costs WHERE cost_id = " + id);
             rs.next();
@@ -35,7 +38,7 @@ public class CostDAO implements DAO<Cost> {
             );
         } catch (SQLException e) {
             throw new CostDAOException(e.getMessage());
-            }
+        }
     }
 
     @Override
@@ -78,14 +81,14 @@ public class CostDAO implements DAO<Cost> {
 
     @Override
     public void update(int id, Cost c) throws CostDAOException {
-        String pattern =  "dd.MM.YYYY";
+        String pattern = "dd.MM.YYYY";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         String dateSQL = simpleDateFormat.format(c.getTime());
 
         try {
             conn.stm.executeUpdate("UPDATE costs SET " +
                     "cat_id = " + c.getCategoryID() + "," +
-                    "ammount = " + c.getSum() + "," +
+                    "amount = " + c.getSum() + "," +
                     "currency = '" + c.getCurrency().toString() + "'," +
                     "description = '" + c.getDesc() + "'," +
                     "date = '" + dateSQL + "'," +
@@ -102,15 +105,21 @@ public class CostDAO implements DAO<Cost> {
         } catch (SQLException e) {
             throw new CostDAOException(e.getMessage());
         }
-
     }
 
+    /**
+     * Retrieve a list of costs for a specific date.
+     *
+     * @param date The date to filter costs by.
+     * @return A list of costs for the specified date.
+     * @throws CostDAOException If an error occurs during retrieval.
+     */
     public List<Cost> getCostsByDate(Date date) throws CostDAOException {
         List<Cost> costs = new LinkedList<>();
         String pattern = "dd.MM.YYYY";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         try {
-            ResultSet rs = conn.stm.executeQuery("SELECT * FROM  costs WHERE  date ='" + simpleDateFormat.format(date)+"'");
+            ResultSet rs = conn.stm.executeQuery("SELECT * FROM  costs WHERE  date ='" + simpleDateFormat.format(date) + "'");
             while (rs.next()) {
                 costs.add(new Cost(
                         rs.getDouble("amount"),
@@ -126,11 +135,18 @@ public class CostDAO implements DAO<Cost> {
         return costs;
     }
 
-    public List<Cost> getCostsByMonth(int year, int month) throws CostDAOException
-    {
+    /**
+     * Retrieve a list of costs for a specific year and month.
+     *
+     * @param year  The year to filter costs by.
+     * @param month The month to filter costs by.
+     * @return A list of costs for the specified year and month.
+     * @throws CostDAOException If an error occurs during retrieval.
+     */
+    public List<Cost> getCostsByMonth(int year, int month) throws CostDAOException {
         List<Cost> costs = new LinkedList<>();
         try {
-            ResultSet rs = conn.stm.executeQuery("SELECT * FROM  costs WHERE month(date)="+month+" AND year(date)="+year);
+            ResultSet rs = conn.stm.executeQuery("SELECT * FROM  costs WHERE month(date)=" + month + " AND year(date)=" + year);
             while (rs.next()) {
                 costs.add(new Cost(
                         rs.getDouble("amount"),
@@ -146,6 +162,3 @@ public class CostDAO implements DAO<Cost> {
         return costs;
     }
 }
-
-
-
