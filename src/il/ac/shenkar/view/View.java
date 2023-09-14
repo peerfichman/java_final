@@ -6,6 +6,8 @@ import il.ac.shenkar.model.Currency;
 import il.ac.shenkar.viewmodel.ViewModel;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -121,7 +123,6 @@ public class View {
         categoryLabel.setFont(new Font("Arial", Font.BOLD, 18));
         formPanel.add(categoryLabel, gbc);
 
-
         DefaultComboBoxModel<Category> categoryDefaultComboBoxModel = new DefaultComboBoxModel<>(categories.toArray(new Category[0]));
         categoryComboBox = new JComboBox<>(categoryDefaultComboBoxModel);
         gbc.gridx = 1;
@@ -169,21 +170,55 @@ public class View {
         gbc.anchor = GridBagConstraints.CENTER; // Center the button
         formPanel.add(submitButton, gbc);
 
+        // Disable the submit button initially
+        submitButton.setEnabled(false);
+
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Handle expense submission here
                 Category category = (Category) categoryComboBox.getSelectedItem();
                 Currency currency = (Currency) currencyComboBox.getSelectedItem();
-                String amount = amountTextField.getText();
+                String amountText = amountTextField.getText();
+                Double amount = Double.parseDouble(amountText);
                 String description = descriptionTextArea.getText();
 
-                Cost newCost = new Cost(Double.parseDouble(amount),category.getId(), currency, description, new Date(System.currentTimeMillis()));
-                VM.addCost(newCost);
+                if (amount > 0) {
+                    Cost newCost = new Cost(amount, category.getId(), currency, description, new Date(System.currentTimeMillis()));
+                    VM.addCost(newCost);
 
-                // Reset form fields
-                amountTextField.setText("");
-                descriptionTextArea.setText("");
+                    // Reset form fields
+                    amountTextField.setText("");
+                    descriptionTextArea.setText("");
+                }
+            }
+        });
+
+        // Add a document listener to the amountTextField to enable/disable the submit button based on the amount
+        amountTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateSubmitButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateSubmitButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateSubmitButton();
+            }
+
+            private void updateSubmitButton() {
+                try {
+                    String amountText = amountTextField.getText();
+                    Double amount = Double.parseDouble(amountText);
+                    submitButton.setEnabled(amount > 0);
+                } catch (NumberFormatException ex) {
+                    submitButton.setEnabled(false);
+                }
             }
         });
 
@@ -201,6 +236,7 @@ public class View {
 
         return panel;
     }
+
 
     private JPanel createAddCategoryPanel() {
         JPanel panel = new JPanel(new BorderLayout());
